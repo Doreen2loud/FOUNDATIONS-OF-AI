@@ -1,0 +1,74 @@
+# TASK 2A: AUSTRALIA MAP COLOURING
+
+regions = ['WA', 'NT', 'SA', 'QLD', 'NSW', 'VIC']
+
+# 1.WA  = Western Australia
+# 2.NT  = Northern Territory
+# 3.SA  = South Australia
+# 4.QLD = Queensland
+# 5.NSW = New South Wales
+# 6.VIC = Victoria
+
+Neighbours = {
+    'WA':  ['NT', 'SA'],
+    'NT':  ['WA', 'SA', 'QLD'],
+    'SA':  ['WA', 'NT', 'QLD', 'NSW', 'VIC'],
+    'QLD': ['NT', 'SA', 'NSW'],
+    'NSW': ['QLD', 'SA', 'VIC'],
+    'VIC': ['SA', 'NSW']
+}
+
+#Colours available to use for the map colouring
+
+colors = ['Red', 'Green', 'Blue']
+
+assignment = {}
+
+#checking whether a colour is valid for a certain neighbour
+
+def is_valid(region, colour, assignment):
+    for neighbour in Neighbours[region]:
+        if neighbour in assignment:
+            if assignment[neighbour] == colour:
+                return False
+    return True
+
+def solve(regions, assignment):
+    if len(assignment) == len(regions):
+        return assignment
+    
+    unassigned = [r for r in regions if r not in assignment]
+    region = unassigned[0]
+
+    for colour in colors:
+        if is_valid(region, colour, assignment):
+            assignment[region] = colour
+
+            result = solve(regions, assignment)
+            if result:
+                return result
+            del assignment[region]
+    return None
+
+# Australia map colouring 
+
+for region, neighbour in Neighbours.items():
+    print(f"  {region} cannot match → {neighbour}")
+
+result = solve(regions, assignment)
+
+valid = True
+
+
+if result:
+    print("\n A solution was found:")
+    for region, colour in result.items():
+        print(f"  {region} → {colour}")
+
+        for region, neighbour_list in Neighbours.items():
+             for neighbour in neighbour_list:
+                if result[region] == result[neighbour]:
+                 valid = False
+
+else:print("\n Was not able to find a solution")
+
