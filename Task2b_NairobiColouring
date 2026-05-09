@@ -1,0 +1,99 @@
+regions = [
+    'Westlands', 'Dagoretti North', 'Dagoretti South',
+    'Langata', 'Kibra', 'Roysambu', 'Kasarani',
+    'Ruaraka', 'Embakasi South', 'Embakasi North',
+    'Embakasi Central', 'Embakasi East', 'Embakasi West',
+    'Makadara', 'Kamukunji', 'Starehe', 'Mathare'
+]
+
+# Sub-counties of Nairobi and their neighbours
+neighbours = {
+    'Westlands':        ['Roysambu', 'Kasarani', 'Starehe', 'Dagoretti North'],
+    'Dagoretti North':  ['Westlands', 'Dagoretti South', 'Kibra', 'Starehe'],
+    'Dagoretti South':  ['Dagoretti North', 'Langata', 'Kibra'],
+    'Langata':          ['Dagoretti South', 'Kibra', 'Embakasi West'],
+    'Kibra':            ['Dagoretti North', 'Dagoretti South', 'Langata', 'Starehe', 'Kamukunji'],
+    'Roysambu':         ['Westlands', 'Kasarani', 'Ruaraka', 'Starehe'],
+    'Kasarani':         ['Westlands', 'Roysambu', 'Ruaraka', 'Mathare'],
+    'Ruaraka':          ['Roysambu', 'Kasarani', 'Mathare', 'Embakasi North'],
+    'Embakasi South':   ['Embakasi West', 'Embakasi Central', 'Embakasi East'],
+    'Embakasi North':   ['Ruaraka', 'Embakasi Central', 'Embakasi East', 'Mathare'],
+    'Embakasi Central': ['Embakasi South', 'Embakasi North', 'Embakasi East', 'Embakasi West', 'Makadara'],
+    'Embakasi East':    ['Embakasi South', 'Embakasi North', 'Embakasi Central'],
+    'Embakasi West':    ['Langata', 'Embakasi South', 'Embakasi Central', 'Makadara', 'Kamukunji'],
+    'Makadara':         ['Embakasi Central', 'Embakasi West', 'Kamukunji', 'Starehe'],
+    'Kamukunji':        ['Kibra', 'Embakasi West', 'Makadara', 'Starehe'],
+    'Starehe':          ['Westlands', 'Dagoretti North', 'Kibra', 'Roysambu', 'Kamukunji', 'Makadara', 'Mathare'],
+    'Mathare':          ['Kasarani', 'Ruaraka', 'Embakasi North', 'Starehe']
+}
+
+
+def is_valid(region, colour, assignment, neighbours):
+    for neighbour in neighbours[region]:
+        if neighbour in assignment:
+            if assignment[neighbour] == colour:
+                return False
+    return True
+
+# Using Backtracking to solve
+
+def solve(regions, neighbours, colours, assignment):
+    if len(assignment) == len(regions):
+        return assignment
+    unassigned = [r for r in regions if r not in assignment]
+    region = unassigned[0]
+    for colour in colours:
+        if is_valid(region, colour, assignment, neighbours):
+            assignment[region] = colour
+            result = solve(regions, neighbours, colours, assignment)
+            if result:
+                return result
+            del assignment[region]
+    return None
+
+# Find minimum colours needed
+
+def solve_with_minimum_colours(regions, neighbours):
+    for num_colours in range(3, len(regions) + 1):
+        colours = [f'Colour{i+1}' for i in range(num_colours)]
+        assignment = {}
+        result = solve(regions, neighbours, colours, assignment)
+        if result:
+            return result, colours
+    return None, None 
+
+#Run and display the results
+
+print("NAIROBI SUB-COUNTIES MAP COLOURING")
+print("Constraint Satisfaction Problem")
+print(f"\nTotal Sub-Counties: {len(regions)}")
+
+print("\nSub-Counties:")
+for i, region in enumerate(regions):
+    print(f"  {i+1}. {region}")
+
+print("\nNeighbour Constraints:")
+for region, neighbour in neighbours.items():
+    print(f"  {region} cannot match → {neighbour}")
+
+print("\nSolving with minimum colours...")
+result, colours = solve_with_minimum_colours(regions, neighbours)
+
+if result:
+    print(f"\n The solution was foundgit")
+    print(f"Minimum colours needed: {len(colours)}")
+
+    for region, colour in result.items():
+        print(f"  {region} → {colour}")
+    print("\nVerifying constraints...")
+    valid = True
+    for region, neighbour_list in neighbours.items():
+        for neighbour in neighbour_list:
+            if result[region] == result[neighbour]:
+                print(f"CONFLICT: {region} and {neighbour}")
+                valid = False
+    if valid:
+        print("All constraints satisfied")
+        print("No two neighbouring sub-counties share the same colour")
+else:
+    print("No solution found!")
