@@ -1,4 +1,13 @@
-# AI and ML 
+# FOUNDATIONS OF AI
+
+## Registrations Details
+
+NAME: DOREEN MULEE
+REG/NO: CIT-223-070/2024
+UNIT NAME: FOUNDATIONS OF AI
+UNIT CODE: CCS 2226
+COURSE: COMPUTER SCIENCE
+
 ## Task 1
 
 This project uses a neural network to recognize handwritten digits (0–9) using the MNIST dataset.
